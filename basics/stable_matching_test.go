@@ -1,7 +1,6 @@
 package basics
 
 import (
-	"fmt"
 	"log/slog"
 	"testing"
 )
@@ -18,7 +17,7 @@ import (
 //   Z: 'ACB'
 // }
 
-func TestStableMatching(t *testing.T) {
+func TestStableMatching1(t *testing.T) {
 	mPrefs := map[string][]string{
 		"A": {"Y", "X", "Z"},
 		"B": {"Y", "Z", "X"},
@@ -32,7 +31,28 @@ func TestStableMatching(t *testing.T) {
 	men, women := InitParties(mPrefs, wPrefs)
 	StableMactch(men, women)
 	for _, m := range men {
-		slog.Info(fmt.Sprintf("m: %s, w: %s", m.name, m.matched.name))
+		slog.Info(m.String())
+	}
+
+}
+
+func TestStableMatching2(t *testing.T) {
+	mPrefs := map[string][]string{
+		"0": {"7", "5", "6", "4"},
+		"1": {"5", "4", "6", "7"},
+		"2": {"4", "5", "6", "7"},
+		"3": {"4", "5", "6", "7"},
+	}
+	wPrefs := map[string][]string{
+		"4": {"0", "1", "2", "3"},
+		"5": {"0", "1", "2", "3"},
+		"6": {"0", "1", "2", "3"},
+		"7": {"0", "1", "2", "3"},
+	}
+	men, women := InitParties(mPrefs, wPrefs)
+	StableMactch(men, women)
+	for _, m := range men {
+		slog.Info(m.String())
 	}
 
 }

@@ -30,10 +30,10 @@ func (p *Party) String() string {
 		prefs = append(prefs, p.name)
 	}
 	return fmt.Sprintf(
-		"P{n: %s, prefs: %s, m: %s}",
+		"P{name: %s, match: %s, prefs: [%s]}",
 		p.name,
-		strings.Join(prefs, ", "),
 		matched,
+		strings.Join(prefs, ", "),
 	)
 }
 
