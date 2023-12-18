@@ -60,3 +60,19 @@ func TestPopHeapifyDown(t *testing.T) {
 	h.Pop(2)
 	fmt.Println(h.String())
 }
+
+func TestPopHeapifyDownLast(t *testing.T) {
+	less := func(i, j int) bool { return i < j }
+	h := NewHeap[int](15, less)
+	h.Add(4)
+	h.Add(7)
+	h.Add(7)
+	h.Add(10)
+	h.Add(16)
+	h.Add(7)
+	h.Add(11)
+	fmt.Println(h.String())
+	assert.Equal(t, h.IsCorrupt(), false)
+	h.Pop(14)
+	fmt.Println(h.String())
+}

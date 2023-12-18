@@ -35,12 +35,15 @@ func (h *Heap[T]) HeapifyUp(i int) {
 	if h.less(h.arr[i], h.arr[parentIdx]) {
 		h.arr[parentIdx], h.arr[i] = h.arr[i], h.arr[parentIdx]
 		h.HeapifyUp(parentIdx)
+	} else {
+		slog.Info("HeapifyUp: Nothing to do")
 	}
 }
 
 func (h *Heap[T]) Pop(i int) {
 	h.size -= 1
 	h.arr[i] = h.arr[h.size]
+	h.HeapifyUp(i)
 	h.HeapifyDown(i)
 }
 
