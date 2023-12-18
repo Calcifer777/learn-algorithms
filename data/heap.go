@@ -6,18 +6,20 @@ import (
 	"strings"
 )
 
-type Heap[T any] struct {
-	arr  []T
-	size int
-	less func(t1, t2 T) bool
+type Heap[T comparable] struct {
+	arr       []T
+	size      int
+	less      func(t1, t2 T) bool
+	positions map[T]int
 }
 
-func NewHeap[T any](size int, less func(t1, t2 T) bool) Heap[T] {
-	return Heap[T]{make([]T, size), 0, less}
+func NewHeap[T comparable](size int, less func(t1, t2 T) bool) Heap[T] {
+	return Heap[T]{make([]T, size), 0, less, make(map[T]int)}
 }
 
 func (h *Heap[T]) Add(t T) {
 	h.arr[h.size] = t
+	h.positions[t] = h.size
 	h.size += 1
 	h.HeapifyUp(h.size - 1)
 }
@@ -34,6 +36,8 @@ func (h *Heap[T]) HeapifyUp(i int) {
 	}
 	if h.less(h.arr[i], h.arr[parentIdx]) {
 		h.arr[parentIdx], h.arr[i] = h.arr[i], h.arr[parentIdx]
+		h.positions[h.arr[parentIdx]] = parentIdx
+		h.positions[h.arr[i]] = i
 		h.HeapifyUp(parentIdx)
 	} else {
 		slog.Info("HeapifyUp: Nothing to do")
@@ -42,6 +46,7 @@ func (h *Heap[T]) HeapifyUp(i int) {
 
 func (h *Heap[T]) Pop(i int) {
 	h.size -= 1
+	delete(h.positions, h.arr[i])
 	h.arr[i] = h.arr[h.size]
 	h.HeapifyUp(i)
 	h.HeapifyDown(i)
@@ -59,15 +64,10 @@ func (h *Heap[T]) HeapifyDown(i int) {
 	} else {
 		childIdx = i*2 + 2
 	}
-	slog.Info("HeapifyDown",
-		slog.Int("i", i),
-		slog.Any("v", h.arr[i]),
-		slog.Any("c-l", h.arr[i*2]),
-		slog.Any("c-r", h.arr[i*2+1]),
-		slog.Any("cIdx", childIdx),
-	)
 	if h.less(h.arr[childIdx], h.arr[i]) {
 		h.arr[i], h.arr[childIdx] = h.arr[childIdx], h.arr[i]
+		h.positions[h.arr[i]] = i
+		h.positions[h.arr[childIdx]] = childIdx
 		h.HeapifyDown(childIdx)
 	}
 }
