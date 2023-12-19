@@ -1,19 +1,19 @@
 package data
 
-type Node[T comparable] struct {
+type Node[T any] struct {
 	v          T
 	prev, next *Node[T]
 }
 
-func NewNode[T comparable](t T, prev, next *Node[T]) Node[T] {
+func NewNode[T any](t T, prev, next *Node[T]) Node[T] {
 	return Node[T]{t, prev, next}
 }
 
-type DoublyLinkedList[T comparable] struct {
+type DoublyLinkedList[T any] struct {
 	first, last *Node[T]
 }
 
-func NewDLL[T comparable]() DoublyLinkedList[T] {
+func NewDLL[T any]() DoublyLinkedList[T] {
 	return DoublyLinkedList[T]{nil, nil}
 }
 
@@ -53,4 +53,28 @@ func (l *DoublyLinkedList[T]) Pop(first bool) bool {
 		l.first.prev = l.last
 		return true
 	}
+}
+
+type Queue[T any] struct {
+	dll DoublyLinkedList[T]
+}
+
+func (q *Queue[T]) Push(t T) {
+	q.dll.Push(t, false)
+}
+
+func (q *Queue[T]) Pop() bool {
+	return q.dll.Pop(true)
+}
+
+type Stack[T any] struct {
+	dll DoublyLinkedList[T]
+}
+
+func (q *Stack[T]) Push(t T) {
+	q.dll.Push(t, true)
+}
+
+func (q *Stack[T]) Pop() bool {
+	return q.dll.Pop(true)
 }
