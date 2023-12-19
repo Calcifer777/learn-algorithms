@@ -35,35 +35,44 @@ func (l *DoublyLinkedList[T]) Push(t T, first bool) {
 	}
 }
 
-func (l *DoublyLinkedList[T]) Pop(first bool) bool {
+func (l *DoublyLinkedList[T]) Pop(first bool) (*T, bool) {
 	if l.first == nil {
-		return false
+		return nil, false
 	} else if l.first == l.last {
+		popped := &l.first.v
 		l.first = nil
 		l.last = nil
-		return true
+		return popped, true
 	} else if first {
+		popped := &l.first.v
 		l.first = l.first.next
 		l.first.prev = l.last
 		l.last.next = l.first
-		return true
+		return popped, true
 	} else {
+		popped := &l.last.v
 		l.last = l.last.prev
 		l.last.next = l.first
 		l.first.prev = l.last
-		return true
+		return popped, true
 	}
 }
 
 type Queue[T any] struct {
-	dll DoublyLinkedList[T]
+	dll  DoublyLinkedList[T]
+	size int
+}
+
+func NewQueue[T any]() Queue[T] {
+	return Queue[T]{NewDLL[T](), 0}
 }
 
 func (q *Queue[T]) Push(t T) {
 	q.dll.Push(t, false)
+	q.size += 1
 }
 
-func (q *Queue[T]) Pop() bool {
+func (q *Queue[T]) Pop() (*T, bool) {
 	return q.dll.Pop(true)
 }
 
@@ -71,10 +80,14 @@ type Stack[T any] struct {
 	dll DoublyLinkedList[T]
 }
 
+func NewStack[T any]() Stack[T] {
+	return Stack[T]{NewDLL[T]()}
+}
+
 func (q *Stack[T]) Push(t T) {
 	q.dll.Push(t, true)
 }
 
-func (q *Stack[T]) Pop() bool {
+func (q *Stack[T]) Pop() (*T, bool) {
 	return q.dll.Pop(true)
 }

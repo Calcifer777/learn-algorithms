@@ -30,7 +30,7 @@ func TestPushMany(t *testing.T) {
 
 func TestPopEmpty(t *testing.T) {
 	dll := NewDLL[int]()
-	ok := dll.Pop(true)
+	_, ok := dll.Pop(true)
 	assert.Equal(t, false, ok)
 }
 
