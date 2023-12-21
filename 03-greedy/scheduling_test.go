@@ -51,3 +51,22 @@ func TestColor(t *testing.T) {
     scheduled,
   )
 }
+
+
+func TestJobSchedule(t *testing.T) {
+  slots := []Job{
+    Job{2, 4},
+    Job{3, 6},
+    Job{1, 2},
+  }
+  scheduled := EarliestDeadlineFirst(slots)
+  expected := []JobSchedule{
+    JobSchedule{Job{1, 2}, 0},
+    JobSchedule{Job{2, 4}, 1},
+    JobSchedule{Job{3, 6}, 3},
+  }
+  assert.ElementsMatch(t,
+    expected,
+    scheduled,
+  )
+}

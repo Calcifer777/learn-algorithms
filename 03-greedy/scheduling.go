@@ -34,7 +34,7 @@ func Schedule(target Interval, slots []Interval) []Interval {
   if len(slots) == 0 {
     return out
   }
-  slotsSorted := SortIntervals(slots, EndsBefore)
+  slotsSorted := SortArr(slots, EndsBefore)
   out = append(out, slotsSorted[0])
   for _, i := range slotsSorted {
     if i.s < out[len(out)-1].f {
@@ -47,7 +47,7 @@ func Schedule(target Interval, slots []Interval) []Interval {
 }
 
 func Color(slots []Interval) []int {
-  slotsSorted := SortIntervals(slots, StartBefore)
+  slotsSorted := SortArr(slots, StartBefore)
   colors := make([]int, len(slotsSorted))
   var excludedLabels map[int]bool
   for j, slot := range slotsSorted {
@@ -73,13 +73,13 @@ func Color(slots []Interval) []int {
   return colors
 }
 
-func SortIntervals(is []Interval, cmp func(i1, i2 Interval) bool) []Interval {
-  if len(is) <= 1 {
-    return is
+func SortArr[T any](arr []T, cmp func(i1, i2 T) bool) []T {
+  if len(arr) <= 1 {
+    return arr
   } else {
-    ref := is[0]
-    larger, smaller := make([]Interval, 0), make([]Interval, 0)
-    for _, i := range is[1:] {
+    ref := arr[0]
+    larger, smaller := make([]T, 0), make([]T, 0)
+    for _, i := range arr[1:] {
       if cmp(ref, i) {
         larger = append(larger, i)
       } else {
@@ -87,10 +87,33 @@ func SortIntervals(is []Interval, cmp func(i1, i2 Interval) bool) []Interval {
       }
     }
     return append(
-      append(SortIntervals(smaller, cmp), ref),
-      SortIntervals(larger, cmp)...,
+      append(SortArr(smaller, cmp), ref),
+      SortArr(larger, cmp)...,
     )
-
   }
 }
 
+type Job struct {
+  t, d int
+}
+
+type JobSchedule struct {
+  j Job
+  s int
+}
+
+func EarliestDeadlineFirst(jobs []Job) []JobSchedule {
+  sorted := SortArr(
+    jobs, 
+    func(j1, j2 Job) bool { return j1.d < j2.d },
+  )
+  s := 0
+  scheduled := make([]JobSchedule, 0)
+  for _, j := range sorted {
+    js := JobSchedule{j, s}
+    slog.Info(fmt.Sprintf("Scheduling job as %v\n", js))
+    scheduled = append(scheduled, js)
+    s += j.t
+  }
+  return scheduled
+}
