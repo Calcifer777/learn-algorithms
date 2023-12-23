@@ -15,10 +15,10 @@ func Bfs[T comparable](g data.Graph[T], f T, t T) int {
 	for len(bfsLayers[layerIdx]) > 0 {
 		nextLayer := make([]T, 0)
 		for _, n := range bfsLayers[layerIdx] {
-			for _, linked := range g.Edges(n) {
-				if !visited[*linked] {
-					nextLayer = append(nextLayer, *linked)
-					visited[*linked] = true
+			for _, edge := range g.Edges(n) {
+				if !visited[edge.To()] {
+					nextLayer = append(nextLayer, edge.To())
+					visited[edge.To()] = true
 				}
 			}
 		}
@@ -42,10 +42,10 @@ func BfsQueue[T comparable](g data.Graph[T], f T, t T) int {
 		if !ok {
 			return -1
 		}
-		for _, linked := range g.Edges(*next) {
-			if !visited[*linked] {
-				visited[*linked] = true
-				queue.Push(*linked)
+		for _, edge := range g.Edges(*next) {
+			if !visited[edge.To()] {
+				visited[edge.To()] = true
+				queue.Push(edge.To())
 			}
 		}
 		steps += 1
@@ -70,9 +70,9 @@ func DfsStack[T comparable](g data.Graph[T], f T, t T) int {
 			explored[*next] = true
 			toVisit := g.Edges(*next)
 			slices.Reverse(toVisit)
-			for _, linked := range toVisit {
-				stack.Push(*linked)
-				if *linked == t {
+			for _, edge := range toVisit {
+				stack.Push(edge.To())
+				if edge.To() == t {
 					found = true
 				}
 			}

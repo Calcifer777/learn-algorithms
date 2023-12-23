@@ -18,6 +18,7 @@ func TestBFSFound(t *testing.T) {
 			data.NewEdge(3, 7, 1),
 			data.NewEdge(7, 8, 1),
 		},
+		false,
 	)
 	dist := Bfs(g, 1, 8)
 	assert.Equal(t, 3, dist)
@@ -34,6 +35,7 @@ func TestBFSQueueFound(t *testing.T) {
 			data.NewEdge(3, 7, 1),
 			data.NewEdge(7, 8, 1),
 		},
+		false,
 	)
 	steps := BfsQueue(g, 1, 8)
 	assert.Equal(t, 7, steps)
@@ -50,6 +52,7 @@ func TestDFSQueueFound(t *testing.T) {
 			data.NewEdge(3, 7, 1),
 			data.NewEdge(4, 8, 1),
 		},
+		false,
 	)
 	steps := DfsStack(g, 1, 8)
 	assert.Equal(t, 3, steps)

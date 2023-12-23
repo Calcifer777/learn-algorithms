@@ -35,7 +35,7 @@ func (g *Graph[T]) AddEdge(e Edge[T]) {
 		g.adjList[g.Positions[e.f]] = append(g.adjList[g.Positions[e.f]], e)
 	}
 	if !g.directed {
-		edgeRev := NewEdge(e.f, e.t, e.d)
+		edgeRev := NewEdge(e.t, e.f, e.d)
 		g.adjList[g.Positions[e.t]] = append(g.adjList[g.Positions[e.t]], edgeRev)
 	}
 }
@@ -61,6 +61,12 @@ type Edge[T comparable] struct {
 	f, t T
 	d    int
 }
+
+func (e *Edge[T]) From() T { return e.f }
+
+func (e *Edge[T]) To() T { return e.t }
+
+func (e *Edge[T]) Dist() int { return e.d }
 
 func NewEdge[T comparable](f, t T, d int) Edge[T] {
 	return Edge[T]{f, t, d}

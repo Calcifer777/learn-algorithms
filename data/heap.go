@@ -54,23 +54,34 @@ func (h *Heap[T]) HeapifyUp(i int) {
 	}
 }
 
-func (h *Heap[T]) Pop(i int) (*T, bool) {
+func (h *Heap[T]) Pop(i int) (*T, int, bool) {
 	if h.size == 0 {
-		return nil, false
+		return nil, -1, false
 	} else {
-		h.size -= 1
 		out := h.positions[i]
-		h.priorities[i] = h.priorities[h.size]
+		priority := h.priorities[i]
+		newPrio := math.MaxInt16
+		var newVal T
+		if h.size > 1 {
+			newPrio = h.priorities[h.size-1]
+			newVal = h.positions[h.size-1]
+		}
+		h.priorities[i] = newPrio
+		h.positions[i] = newVal
+		var stub T
+		h.priorities[h.size-1] = math.MaxInt16
+		h.positions[h.size-1] = stub
+		h.size -= 1
 		h.HeapifyUp(i)
 		h.HeapifyDown(i)
-		return &out, true
+		return &out, priority, true
 	}
 }
 
 func (h *Heap[T]) HeapifyDown(i int) {
 	var childIdx int
 	// check if we removed a leaf
-	if (i+1)*2 >= h.size {
+	if i*2+1 >= h.size {
 		return
 	}
 	// pick child with lower value
@@ -122,6 +133,15 @@ func (h *Heap[T]) String() string {
 		out += prefix + strings.Join(lines[i], sep) + "\n\n"
 	}
 	return out
+}
+
+func (h *Heap[T]) Value(t T) (int, bool) {
+	pos, ok := IndexOf(h.positions, t)
+	if !ok {
+		return -1, false
+	} else {
+		return h.priorities[pos], true
+	}
 }
 
 func (h *Heap[T]) ChangeKey(t T, priority int) bool {
