@@ -55,10 +55,11 @@ func GraphFromEdges[T comparable](edges []Edge[T]) Graph[T] {
 
 type Edge[T comparable] struct {
 	f, t T
+	d    int
 }
 
-func NewEdge[T comparable](f, t T) Edge[T] {
-	return Edge[T]{f, t}
+func NewEdge[T comparable](f, t T, d int) Edge[T] {
+	return Edge[T]{f, t, d}
 }
 
 func contains[T comparable](arr []T, needle T) bool {

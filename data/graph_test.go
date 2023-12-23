@@ -9,10 +9,10 @@ import (
 func TestFromEdges(t *testing.T) {
 	g := GraphFromEdges(
 		[]Edge[int]{
-			NewEdge(1, 2),
-			NewEdge(1, 3),
-			NewEdge(2, 4),
-			NewEdge(2, 5),
+			NewEdge(1, 2, 1),
+			NewEdge(1, 3, 1),
+			NewEdge(2, 4, 1),
+			NewEdge(2, 5, 1),
 		},
 	)
 	assert.ElementsMatch(t, g.Nodes(), []int{1, 2, 3, 4, 5})
