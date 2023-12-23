@@ -2,37 +2,41 @@ package data
 
 type Graph[T comparable] struct {
 	nodes     []T
-	adjList   [][]*T
-	positions map[T]int
+	adjList   [][]Edge[T]
+	Positions map[T]int
+	directed  bool
 }
 
-func NewGraph[T comparable]() Graph[T] {
+func NewGraph[T comparable](directed bool) Graph[T] {
 	return Graph[T]{
 		make([]T, 0),
-		make([][]*T, 0),
+		make([][]Edge[T], 0),
 		make(map[T]int),
+		directed,
 	}
 }
 
 func (g *Graph[T]) AddNode(t T) {
-	if _, ok := g.positions[t]; !ok {
-		g.positions[t] = len(g.nodes)
+	if _, ok := g.Positions[t]; !ok {
+		g.Positions[t] = len(g.nodes)
 		g.nodes = append(g.nodes, t)
-		g.adjList = append(g.adjList, make([]*T, 0))
+		g.adjList = append(g.adjList, make([]Edge[T], 0))
 	}
 }
 
-func (g *Graph[T]) AddEdge(t1, t2 T) {
-	if _, ok := g.positions[t1]; !ok {
-		g.AddNode(t1)
+func (g *Graph[T]) AddEdge(e Edge[T]) {
+	if _, ok := g.Positions[e.f]; !ok {
+		g.AddNode(e.f)
 	}
-	if _, ok := g.positions[t2]; !ok {
-		g.AddNode(t2)
+	if _, ok := g.Positions[e.t]; !ok {
+		g.AddNode(e.t)
 	}
-	if !contains(g.adjList[g.positions[t1]], &t2) {
-		g.adjList[g.positions[t1]] = append(g.adjList[g.positions[t1]], &t2)
-		g.adjList[g.positions[t2]] = append(g.adjList[g.positions[t2]], &t1)
-
+	if !contains(g.adjList[g.Positions[e.f]], e) {
+		g.adjList[g.Positions[e.f]] = append(g.adjList[g.Positions[e.f]], e)
+	}
+	if !g.directed {
+		edgeRev := NewEdge(e.f, e.t, e.d)
+		g.adjList[g.Positions[e.t]] = append(g.adjList[g.Positions[e.t]], edgeRev)
 	}
 }
 
@@ -40,14 +44,14 @@ func (g *Graph[T]) Nodes() []T {
 	return g.nodes
 }
 
-func (g *Graph[T]) Edges(t1 T) []*T {
-	return g.adjList[g.positions[t1]]
+func (g *Graph[T]) Edges(t1 T) []Edge[T] {
+	return g.adjList[g.Positions[t1]]
 }
 
-func GraphFromEdges[T comparable](edges []Edge[T]) Graph[T] {
-	g := NewGraph[T]()
+func GraphFromEdges[T comparable](edges []Edge[T], directed bool) Graph[T] {
+	g := NewGraph[T](directed)
 	for _, e := range edges {
-		g.AddEdge(e.f, e.t)
+		g.AddEdge(e)
 	}
 	return g
 

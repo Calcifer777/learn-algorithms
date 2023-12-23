@@ -14,6 +14,7 @@ func TestFromEdges(t *testing.T) {
 			NewEdge(2, 4, 1),
 			NewEdge(2, 5, 1),
 		},
+		false,
 	)
 	assert.ElementsMatch(t, g.Nodes(), []int{1, 2, 3, 4, 5})
 	assert.Len(t, g.Edges(1), 2)
