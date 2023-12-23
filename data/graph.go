@@ -44,6 +44,14 @@ func (g *Graph[T]) Nodes() []T {
 	return g.nodes
 }
 
+func (g *Graph[T]) GetEdges() []Edge[T] {
+	allEdges := make([]Edge[T], 0)
+	for _, edges := range g.adjList {
+		allEdges = append(allEdges, edges...)
+	}
+	return allEdges
+}
+
 func (g *Graph[T]) Edges(t1 T) []Edge[T] {
 	return g.adjList[g.Positions[t1]]
 }
