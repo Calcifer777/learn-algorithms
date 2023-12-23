@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"slices"
 	"strings"
 )
 
@@ -136,8 +137,8 @@ func (h *Heap[T]) String() string {
 }
 
 func (h *Heap[T]) Value(t T) (int, bool) {
-	pos, ok := IndexOf(h.positions, t)
-	if !ok {
+	pos := slices.Index(h.positions, t)
+	if pos == -1 {
 		return -1, false
 	} else {
 		return h.priorities[pos], true
@@ -145,8 +146,8 @@ func (h *Heap[T]) Value(t T) (int, bool) {
 }
 
 func (h *Heap[T]) ChangeKey(t T, priority int) bool {
-	pos, ok := IndexOf(h.positions, t)
-	if !ok {
+	pos := slices.Index(h.positions, t)
+	if pos == -1 {
 		return false
 	} else {
 		h.priorities[pos] = priority
@@ -154,13 +155,4 @@ func (h *Heap[T]) ChangeKey(t T, priority int) bool {
 		h.HeapifyDown(pos)
 		return true
 	}
-}
-
-func IndexOf[T comparable](arr []T, needle T) (int, bool) {
-	for i, t := range arr {
-		if t == needle {
-			return i, true
-		}
-	}
-	return -1, false
 }
