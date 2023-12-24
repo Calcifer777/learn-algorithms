@@ -19,13 +19,13 @@ func TestPrim(t *testing.T) {
 		data.NewEdge("c", "e", 2),
 		data.NewEdge("c", "f", 6),
 		data.NewEdge("e", "f", 1),
-	}, false)
+	}, true)
 	tree := Prim(g)
 	spanningTreeSum := 0
 	for _, e := range tree.GetEdges() {
 		spanningTreeSum += e.Dist()
 	}
-	assert.Equal(t, 10, spanningTreeSum/2) // TODO: should be 9, need bugfix
+	assert.Equal(t, 9, spanningTreeSum)
 }
 
 func TestKruskal(t *testing.T) {

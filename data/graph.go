@@ -85,6 +85,10 @@ func (g *Graph[T]) GetNodeLabel(n int) T {
 	return g.labels[n]
 }
 
+func (g *Graph[T]) IsDirected() bool {
+	return g.directed
+}
+
 func (g *Graph[T]) GetNodeId(t T) int {
 	return g.nodeToId[t]
 }
