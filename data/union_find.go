@@ -11,6 +11,7 @@ type Record struct {
 }
 
 func NewUnionFind(nodes []int) UnionFind {
+	// O(n)
 	records := make([]Record, len(nodes))
 	for i, n := range nodes {
 		records[i] = Record{n, nil, 1}
@@ -19,6 +20,7 @@ func NewUnionFind(nodes []int) UnionFind {
 }
 
 func (uf *UnionFind) Union(s1, s2 int) {
+	// O(1), no loops!
 	c1 := uf.Find(s1)
 	c2 := uf.Find(s2)
 	var toChange int
@@ -49,12 +51,18 @@ func (uf *UnionFind) Union(s1, s2 int) {
 }
 
 func (uf *UnionFind) Find(n int) int {
+	// O(log n): at every Union, component size doubles
+	// 			 -> at most n links in the record.component chain
 	for {
 		c := uf.records[n].component
 		if c == nil {
 			return n
 		} else {
-			return uf.Find(c.n)
+			c := uf.Find(c.n)
+			// update each record on the component chain with the master record
+			uf.records[n].component = &uf.records[c]
+			uf.records[n].componentSize = uf.records[c].componentSize
+			return c
 		}
 	}
 }
