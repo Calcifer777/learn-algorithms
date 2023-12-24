@@ -19,6 +19,10 @@ func NewUnionFind(nodes []int) UnionFind {
 	return UnionFind{records: records}
 }
 
+func (uf *UnionFind) Records() []Record {
+	return uf.records
+}
+
 func (uf *UnionFind) Union(s1, s2 int) {
 	// O(1), no loops!
 	c1 := uf.Find(s1)
@@ -30,20 +34,20 @@ func (uf *UnionFind) Union(s1, s2 int) {
 	size2 := uf.records[c2].componentSize
 	if s1 > s2 {
 		masterRecord = &uf.records[c1]
-		toChange = s2
+		toChange = c2
 		mergedRecordSize = size2
 	} else if uf.records[c1].componentSize < uf.records[c2].componentSize {
 		masterRecord = &uf.records[c2]
-		toChange = s1
+		toChange = c1
 		mergedRecordSize = size1
 	} else if c1 < c2 {
 		// in case of comp. length tie, merge into lower node
 		masterRecord = &uf.records[c1]
-		toChange = s2
+		toChange = c2
 		mergedRecordSize = size2
 	} else {
 		masterRecord = &uf.records[c2]
-		toChange = s1
+		toChange = c1
 		mergedRecordSize = size1
 	}
 	masterRecord.componentSize += mergedRecordSize

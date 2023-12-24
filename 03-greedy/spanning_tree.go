@@ -2,6 +2,7 @@ package greedy
 
 import (
 	"math"
+	"slices"
 
 	"github.com/calcifer777/learn-algorithms/data"
 )
@@ -9,7 +10,7 @@ import (
 func Prim[T comparable](g data.Graph[T]) data.Graph[T] {
 	nodes := g.Nodes()
 	root := nodes[0]
-	pq := data.NewPriorityQueue[int](20)
+	pq := data.NewPriorityQueue[int](8)
 	for _, n := range g.Nodes() {
 		if n == root {
 			pq.Push(n, 0)
@@ -41,25 +42,30 @@ func Prim[T comparable](g data.Graph[T]) data.Graph[T] {
 		)
 		edges = append(edges, edgeLabel)
 	}
-	return data.GraphFromEdges(edges, true)
+	return data.GraphFromEdges(edges, false)
 }
 
-// func Kruskal[T comparable](g data.Graph[T]) data.Graph[T] {
-// 	edges := g.GetEdges()
-// 	slices.SortFunc(edges, func(e1, e2 data.Edge[T]) int {
-// 		return e1.Dist() - e2.Dist()
-// 	})
-// 	// probably can be skipped if graph holds node ids (int)
-// 	// instead of values (T)
-// 	edgeIds := make([]int, len(edges))
-// 	for i, _ := range edges {
-// 		edgeIds[i] = i
-// 	}
-// 	unionFind := data.NewUnionFind(edgeIds)
-// 	for i := range edges {
-// 		if unionFind.Find()
-// 	}
-//
-// 	treeEdges := make([]data.Edge[T], 0)
-// 	// return data.GraphFromEdges(edges, true)
-// }
+func Kruskal[T comparable](g data.Graph[T]) data.Graph[T] {
+	edges := g.GetEdges()
+	slices.SortFunc(edges, func(e1, e2 data.Edge[int]) int {
+		return e1.Dist() - e2.Dist()
+	})
+	unionFind := data.NewUnionFind(g.Nodes())
+	treeEdges := make([]data.Edge[T], 0)
+	for _, e := range edges {
+		componentFrom := unionFind.Find(e.From())
+		componentTo := unionFind.Find(e.To())
+		if componentFrom != componentTo {
+			unionFind.Union(e.From(), e.To())
+			treeEdges = append(
+				treeEdges,
+				data.NewEdge[T](
+					g.GetNodeLabel(e.From()),
+					g.GetNodeLabel(e.To()),
+					e.Dist(),
+				),
+			)
+		}
+	}
+	return data.GraphFromEdges(treeEdges, true)
+}
