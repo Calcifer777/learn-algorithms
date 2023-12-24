@@ -28,5 +28,5 @@ func TestPrim(t *testing.T) {
 		data.NewEdge("b", "e", 3),
 		data.NewEdge("e", "f", 1),
 	}
-	assert.ElementsMatch(t, expected, tree.GetEdges())
+	assert.ElementsMatch(t, expected, tree.GetEdgesLabels())
 }

@@ -7,13 +7,15 @@ import (
 )
 
 func Bfs[T comparable](g data.Graph[T], f T, t T) int {
-	visited := make(map[T]bool)
-	visited[f] = true
-	bfsLayers := make([][]T, 0)
-	bfsLayers = append(bfsLayers, []T{f})
+	visited := make(map[int]bool)
+	fromId := g.GetNodeId(f)
+	toId := g.GetNodeId(t)
+	visited[fromId] = true
+	bfsLayers := make([][]int, 0)
+	bfsLayers = append(bfsLayers, []int{fromId})
 	layerIdx := 0
 	for len(bfsLayers[layerIdx]) > 0 {
-		nextLayer := make([]T, 0)
+		nextLayer := make([]int, 0)
 		for _, n := range bfsLayers[layerIdx] {
 			for _, edge := range g.Edges(n) {
 				if !visited[edge.To()] {
@@ -24,7 +26,7 @@ func Bfs[T comparable](g data.Graph[T], f T, t T) int {
 		}
 		bfsLayers = append(bfsLayers, nextLayer)
 		layerIdx += 1
-		if visited[t] {
+		if visited[toId] {
 			return layerIdx
 		}
 	}
@@ -32,10 +34,12 @@ func Bfs[T comparable](g data.Graph[T], f T, t T) int {
 }
 
 func BfsQueue[T comparable](g data.Graph[T], f T, t T) int {
-	visited := make(map[T]bool)
-	visited[f] = true
-	queue := data.NewQueue[T]()
-	queue.Push(f)
+	fromId := g.GetNodeId(f)
+	toId := g.GetNodeId(t)
+	visited := make(map[int]bool)
+	visited[fromId] = true
+	queue := data.NewQueue[int]()
+	queue.Push(fromId)
 	steps := 0
 	for {
 		next, ok := queue.Pop()
@@ -49,16 +53,18 @@ func BfsQueue[T comparable](g data.Graph[T], f T, t T) int {
 			}
 		}
 		steps += 1
-		if visited[t] {
+		if visited[toId] {
 			return steps
 		}
 	}
 }
 
 func DfsStack[T comparable](g data.Graph[T], f T, t T) int {
-	explored := make(map[T]bool)
-	stack := data.NewStack[T]()
-	stack.Push(f)
+	fromId := g.GetNodeId(f)
+	toId := g.GetNodeId(t)
+	explored := make(map[int]bool)
+	stack := data.NewStack[int]()
+	stack.Push(fromId)
 	steps := 0
 	found := false
 	for {
@@ -72,7 +78,7 @@ func DfsStack[T comparable](g data.Graph[T], f T, t T) int {
 			slices.Reverse(toVisit)
 			for _, edge := range toVisit {
 				stack.Push(edge.To())
-				if edge.To() == t {
+				if edge.To() == toId {
 					found = true
 				}
 			}

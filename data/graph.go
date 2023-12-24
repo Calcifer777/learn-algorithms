@@ -1,59 +1,104 @@
 package data
 
+import (
+	"log/slog"
+	"slices"
+)
+
 type Graph[T comparable] struct {
-	nodes    []T
-	adjList  [][]Edge[T]
+	nodes    []int
+	labels   []T
+	adjList  [][]Edge[int]
 	nodeToId map[T]int
 	directed bool
 }
 
 func NewGraph[T comparable](directed bool) Graph[T] {
 	return Graph[T]{
+		make([]int, 0),
 		make([]T, 0),
-		make([][]Edge[T], 0),
+		make([][]Edge[int], 0),
 		make(map[T]int),
 		directed,
 	}
 }
 
-func (g *Graph[T]) AddNode(t T) {
-	if _, ok := g.nodeToId[t]; !ok {
+func (g *Graph[T]) AddNode(t T) int {
+	nodeId, ok := g.nodeToId[t]
+	if !ok {
 		g.nodeToId[t] = len(g.nodes)
-		g.nodes = append(g.nodes, t)
-		g.adjList = append(g.adjList, make([]Edge[T], 0))
+		g.nodes = append(g.nodes, len(g.nodes))
+		g.labels = append(g.labels, t)
+		g.adjList = append(g.adjList, make([]Edge[int], 0))
+		nodeId = g.nodeToId[t]
+	} else {
+		slog.Info("Can't add node, `%v` already in graph!", t)
 	}
+	return nodeId
 }
 
 func (g *Graph[T]) AddEdge(e Edge[T]) {
-	if _, ok := g.nodeToId[e.f]; !ok {
-		g.AddNode(e.f)
+	nodeFrom, ok := g.nodeToId[e.f]
+	if !ok {
+		nodeFrom = g.AddNode(e.f)
 	}
-	if _, ok := g.nodeToId[e.t]; !ok {
-		g.AddNode(e.t)
+	nodeTo, ok := g.nodeToId[e.t]
+	if !ok {
+		nodeTo = g.AddNode(e.t)
 	}
-	if !contains(g.adjList[g.nodeToId[e.f]], e) {
-		g.adjList[g.nodeToId[e.f]] = append(g.adjList[g.nodeToId[e.f]], e)
+	edge := NewEdge(nodeFrom, nodeTo, e.d)
+	if slices.Index(g.adjList[nodeFrom], edge) < 0 {
+		g.adjList[nodeFrom] = append(g.adjList[nodeFrom], edge)
 	}
 	if !g.directed {
-		edgeRev := NewEdge(e.t, e.f, e.d)
-		g.adjList[g.nodeToId[e.t]] = append(g.adjList[g.nodeToId[e.t]], edgeRev)
+		edgeRev := NewEdge(nodeTo, nodeFrom, e.d)
+		if slices.Index(g.adjList[nodeTo], edgeRev) < 0 {
+			g.adjList[nodeTo] = append(g.adjList[nodeTo], edgeRev)
+		}
 	}
 }
 
-func (g *Graph[T]) Nodes() []T {
+func (g *Graph[T]) Nodes() []int {
 	return g.nodes
 }
 
-func (g *Graph[T]) GetEdges() []Edge[T] {
+func (g *Graph[T]) NodeLabels() []T {
+	return g.labels
+}
+
+func (g *Graph[T]) GetEdgesLabels() []Edge[T] {
 	allEdges := make([]Edge[T], 0)
+	for _, edges := range g.adjList {
+		for _, e := range edges {
+			edgeLabel := NewEdge(
+				g.GetNodeLabel(e.From()),
+				g.GetNodeLabel(e.To()),
+				e.Dist(),
+			)
+			allEdges = append(allEdges, edgeLabel)
+		}
+	}
+	return allEdges
+}
+
+func (g *Graph[T]) GetNodeLabel(n int) T {
+	return g.labels[n]
+}
+
+func (g *Graph[T]) GetNodeId(t T) int {
+	return g.nodeToId[t]
+}
+
+func (g *Graph[T]) GetEdges() []Edge[int] {
+	allEdges := make([]Edge[int], 0)
 	for _, edges := range g.adjList {
 		allEdges = append(allEdges, edges...)
 	}
 	return allEdges
 }
 
-func (g *Graph[T]) Edges(t1 T) []Edge[T] {
-	return g.adjList[g.nodeToId[t1]]
+func (g *Graph[T]) Edges(n int) []Edge[int] {
+	return g.adjList[n]
 }
 
 func GraphFromEdges[T comparable](edges []Edge[T], directed bool) Graph[T] {
@@ -78,13 +123,4 @@ func (e *Edge[T]) Dist() int { return e.d }
 
 func NewEdge[T comparable](f, t T, d int) Edge[T] {
 	return Edge[T]{f, t, d}
-}
-
-func contains[T comparable](arr []T, needle T) bool {
-	for _, t := range arr {
-		if t == needle {
-			return true
-		}
-	}
-	return false
 }

@@ -16,8 +16,8 @@ func TestFromEdges(t *testing.T) {
 		},
 		false,
 	)
-	assert.ElementsMatch(t, g.Nodes(), []int{1, 2, 3, 4, 5})
-	assert.Len(t, g.Edges(1), 2)
-	assert.Len(t, g.Edges(2), 3)
-	assert.Len(t, g.Edges(5), 1)
+	assert.ElementsMatch(t, g.NodeLabels(), []int{1, 2, 3, 4, 5})
+	assert.Len(t, g.Edges(g.GetNodeId(1)), 2)
+	assert.Len(t, g.Edges(g.GetNodeId(2)), 3)
+	assert.Len(t, g.Edges(g.GetNodeId(5)), 1)
 }
