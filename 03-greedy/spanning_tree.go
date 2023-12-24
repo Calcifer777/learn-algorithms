@@ -13,25 +13,26 @@ type NodeEdge struct {
 
 func Prim[T comparable](g data.Graph[T]) data.Graph[T] {
 	// not Kleinberg impl!
+	// O(#edges x log #nodes)
 	nodes := g.Nodes()
 	pq := data.NewPriorityQueue[NodeEdge](10)
 	root := nodes[0]
 	for _, e := range g.Edges(root) {
 		pq.Push(NodeEdge{e.To(), e}, e.Dist())
 	}
-	exploredNodes := make(map[int]bool)
+	exploredNodes := make([]bool, len(nodes))
+	exploredNodes[root] = true
 	treeEdges := make([]data.Edge[int], 0)
-	for {
+	for { // # edges
 		nodeEdge, _, ok := pq.Pop()
 		if !ok {
 			break
 		}
-		_, explored := exploredNodes[nodeEdge.n]
-		if !explored {
+		if !exploredNodes[nodeEdge.n] {
 			exploredNodes[nodeEdge.n] = true
 			treeEdges = append(treeEdges, nodeEdge.edge)
 			for _, e := range g.Edges(nodeEdge.n) {
-				pq.Push(NodeEdge{e.To(), e}, e.Dist())
+				pq.Push(NodeEdge{e.To(), e}, e.Dist()) // log #nodes
 			}
 		}
 	}
