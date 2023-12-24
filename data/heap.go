@@ -51,7 +51,7 @@ func (h *Heap[T]) HeapifyUp(i int) {
 		h.positions[i], h.positions[parentIdx] = h.positions[parentIdx], h.positions[i]
 		h.HeapifyUp(parentIdx)
 	} else {
-		slog.Info("HeapifyUp: Nothing to do")
+		slog.Debug("HeapifyUp: Nothing to do")
 	}
 }
 

@@ -1,10 +1,10 @@
 package data
 
 type Graph[T comparable] struct {
-	nodes     []T
-	adjList   [][]Edge[T]
-	Positions map[T]int
-	directed  bool
+	nodes    []T
+	adjList  [][]Edge[T]
+	nodeToId map[T]int
+	directed bool
 }
 
 func NewGraph[T comparable](directed bool) Graph[T] {
@@ -17,26 +17,26 @@ func NewGraph[T comparable](directed bool) Graph[T] {
 }
 
 func (g *Graph[T]) AddNode(t T) {
-	if _, ok := g.Positions[t]; !ok {
-		g.Positions[t] = len(g.nodes)
+	if _, ok := g.nodeToId[t]; !ok {
+		g.nodeToId[t] = len(g.nodes)
 		g.nodes = append(g.nodes, t)
 		g.adjList = append(g.adjList, make([]Edge[T], 0))
 	}
 }
 
 func (g *Graph[T]) AddEdge(e Edge[T]) {
-	if _, ok := g.Positions[e.f]; !ok {
+	if _, ok := g.nodeToId[e.f]; !ok {
 		g.AddNode(e.f)
 	}
-	if _, ok := g.Positions[e.t]; !ok {
+	if _, ok := g.nodeToId[e.t]; !ok {
 		g.AddNode(e.t)
 	}
-	if !contains(g.adjList[g.Positions[e.f]], e) {
-		g.adjList[g.Positions[e.f]] = append(g.adjList[g.Positions[e.f]], e)
+	if !contains(g.adjList[g.nodeToId[e.f]], e) {
+		g.adjList[g.nodeToId[e.f]] = append(g.adjList[g.nodeToId[e.f]], e)
 	}
 	if !g.directed {
 		edgeRev := NewEdge(e.t, e.f, e.d)
-		g.adjList[g.Positions[e.t]] = append(g.adjList[g.Positions[e.t]], edgeRev)
+		g.adjList[g.nodeToId[e.t]] = append(g.adjList[g.nodeToId[e.t]], edgeRev)
 	}
 }
 
@@ -53,7 +53,7 @@ func (g *Graph[T]) GetEdges() []Edge[T] {
 }
 
 func (g *Graph[T]) Edges(t1 T) []Edge[T] {
-	return g.adjList[g.Positions[t1]]
+	return g.adjList[g.nodeToId[t1]]
 }
 
 func GraphFromEdges[T comparable](edges []Edge[T], directed bool) Graph[T] {
