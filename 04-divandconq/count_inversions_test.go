@@ -16,13 +16,14 @@ func TestMergeAndCount(t *testing.T) {
 }
 
 func TestSortAndCount(t *testing.T) {
+	// The input should not contain any duplicate values
 	subTests := []struct {
 		input    []int
 		expected int
 	}{
 		{[]int{3, 2, 1}, 3},
 		{[]int{8, 4, 2, 1}, 6},
-		// {[]int{6, 3, 5, 2}, 5},
+		{[]int{6, 3, 5, 2}, 5},
 	}
 	for _, subTest := range subTests {
 		_, numInv := SortAndCount(subTest.input)
